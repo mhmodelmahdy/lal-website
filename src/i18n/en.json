@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "management": "Management",
+    "news": "News",
+    "contact": "Contact",
+    "support": "Support"
+  },
+  
+  "Home": {
+    "hero": {
+      "title": "Your Trusted Partner Towards Leadership and Quality",
+      "subtitle": "LAL Multiple Activities Co. Ltd – A leader in export, import, and general supplies.",
+      "cta_primary": "Explore Our Services",
+      "cta_secondary": "Contact Us"
+    },
+    "about": {
+      "title": "About the Company",
+      "description": "One of the leading national companies in export, import, and general trading. We operate according to the highest quality standards in both the Sudanese and global markets, leveraging our strong position in healthcare, agriculture, and logistics sectors."
+    },
+    "services": {
+      "title": "Our Fields & Activities",
+      "export_title": "Export of Local Products",
+      "export_desc": "Exporting authentic Sudanese crops (Gum Arabic, Sesame, Hibiscus) to global markets.",
+      "import_title": "Import of Global Products",
+      "import_desc": "Supplying pharmaceuticals, medical equipment, and industrial machinery with a sustainable vision.",
+      "supplies_title": "General Supplies",
+      "supplies_desc": "Providing agricultural machinery and heavy equipment to both government and private sectors.",
+      "thirdparty_title": "Third-Party Import Services",
+      "thirdparty_desc": "Integrated solutions from supplier selection to customs clearance and transportation."
+    },
+    "vision": {
+      "title": "Our Vision & Mission",
+      "vision_text": "We aspire to become a globally leading company through strategic expansion and the establishment of international branches.",
+      "mission_text": "Delivering essential services that enrich local and regional markets while achieving sustainable development."
+    },
+    "ports": {
+      "title": "Our Global Reach (Ports)",
+      "desc": "We work with major international ports to ensure fast and efficient supply chains."
+    },
+    "stats": {
+      "clients": "Happy Clients",
+      "projects": "Completed Projects",
+      "years": "Years of Experience"
+    }
+  }
+
+
+}
