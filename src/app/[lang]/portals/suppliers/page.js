@@ -1,5 +1,5 @@
-import PageTitle from "../../../../components/PageTitle";
-import SuppliersPortalClient from "../../../../components/pages/portals/SuppliersPortalClient";
+import PageTitle from "@/components/PageTitle";
+import SuppliersPortalClient from "@/components/pages/portals/SuppliersPortalClient";
 
 export default async function SuppliersPortalPage({ params }) {
     const { lang: rawLang } = await params;

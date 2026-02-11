@@ -28,14 +28,21 @@ export default function HomeClient({ lang, messages }) {
   };
 
   const services = [
-    { key: "export", icon: Globe, img: "https://images.unsplash.com/photo-1625246333195-09d9b436446d?q=80&w=1200&auto=format&fit=crop" },
-    { key: "import", icon: Stethoscope, img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200&auto=format&fit=crop" },
-    { key: "supplies", icon: Truck, img: "https://images.unsplash.com/photo-1532634922-8fe0b757fb13?q=80&w=1200&auto=format&fit=crop" },
-    { key: "thirdparty", icon: ShieldCheck, img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop" }
-  ];
+  { key: "export", icon: Globe, img: "/dashboardimages/export.png" },
+  { key: "import", icon: Stethoscope, img: "/dashboardimages/import.png" },
+  { key: "supplies", icon: Truck, img: "/dashboardimages/Supplies.png" },
+
+  // سيب آخر صورة زي ما هي
+  {
+    key: "thirdparty",
+    icon: ShieldCheck,
+    img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop",
+  },
+];
+
 
   const stats = [
-    { num: "200+", label: t("stats.clients"), icon: Users },
+    { num: "2000+", label: t("stats.clients"), icon: Users },
     { num: "150+", label: t("stats.projects"), icon: Award },
     { num: "10+", label: t("stats.years"), icon: TrendingUp },
   ];
@@ -253,7 +260,7 @@ export default function HomeClient({ lang, messages }) {
               className="relative h-[420px] rounded-2xl overflow-hidden shadow-2xl group"
             >
               <Image
-                src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1600&q=80"
+                src="/dashboardimages/about.png"
                 alt="About"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-700"

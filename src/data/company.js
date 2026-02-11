@@ -9,8 +9,8 @@ export const company = {
   },
   phones: ["00249123704221", "00971522212735"],
   email: {
-  ar: "info@yourcompany.com",
-  en: "info@yourcompany.com"
+  ar: "info@lalcompany.com",
+  en: "info@lalcompany.com"
   },
   socials: {
   facebook: "#",

@@ -44,12 +44,12 @@ export default function Footer({ lang }) {
             <p className="text-white/70 text-sm leading-7 mb-6">{company.aboutShort[lang]}</p>
             <div className="flex items-center gap-2">
               {[
-                { href: socials.facebook || "#", Icon: Facebook },
-                { href: socials.linkedin || "#", Icon: Linkedin },
-                { href: socials.youtube || "#", Icon: Youtube },
-              ].map(({ href, Icon }) => (
+                { id: "facebook", href: socials.facebook || "#", Icon: Facebook },
+                { id: "linkedin", href: socials.linkedin || "#", Icon: Linkedin },
+                { id: "youtube", href: socials.youtube || "#", Icon: Youtube },
+              ].map(({ id, href, Icon }) => (
                 <motion.a
-                  key={href + Icon.name}
+                  key={id}
                   href={href}
                   target="_blank"
                   rel="noreferrer"

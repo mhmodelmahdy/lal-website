@@ -151,69 +151,16 @@ export default function SupportClient({ lang }) {
                             </motion.a>
                             <motion.a
                                 whileHover={{ x: lang === "ar" ? -4 : 4 }}
-                                href="mailto:info@yourcompany.com"
+                                href="mailto:info@lalcompany.com"
                                 className="flex items-center gap-3 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
                             >
                                 <Mail size={16} className="text-gold" />
-                                <span className="text-sm">info@yourcompany.com</span>
+                                <span className="text-sm">info@lalcompany.com</span>
                             </motion.a>
                         </div>
                     </motion.div>
 
-                    {/* Submit Ticket */}
-                    <motion.div
-                        variants={itemVariants}
-                        className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm"
-                    >
-                        <h3 className="font-bold text-navy-dark text-lg mb-4 flex items-center gap-2">
-                            <MessageCircle size={18} className="text-gold" />
-                            {t("أرسل طلب دعم", "Submit a Support Ticket")}
-                        </h3>
-                        <form onSubmit={handleTicket} className="space-y-3">
-                            <input
-                                type="text"
-                                required
-                                value={ticket.name}
-                                onChange={(e) => setTicket({ ...ticket, name: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition text-sm"
-                                placeholder={t("اسمك", "Your name")}
-                            />
-                            <input
-                                type="email"
-                                required
-                                value={ticket.email}
-                                onChange={(e) => setTicket({ ...ticket, email: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition text-sm"
-                                placeholder={t("بريدك الإلكتروني", "Your email")}
-                            />
-                            <textarea
-                                required
-                                rows={4}
-                                value={ticket.issue}
-                                onChange={(e) => setTicket({ ...ticket, issue: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition text-sm resize-none"
-                                placeholder={t("صف مشكلتك أو استفسارك...", "Describe your issue...")}
-                            />
-                            <motion.button
-                                type="submit"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="w-full px-5 py-3 bg-gold hover:bg-gold-dark text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
-                            >
-                                {ticketSent ? (
-                                    <>
-                                        <CheckCircle size={16} />
-                                        {t("تم الإرسال!", "Sent!")}
-                                    </>
-                                ) : (
-                                    <>
-                                        <Send size={16} />
-                                        {t("إرسال", "Submit")}
-                                    </>
-                                )}
-                            </motion.button>
-                        </form>
-                    </motion.div>
+                    
                 </motion.div>
             </div>
         </div>

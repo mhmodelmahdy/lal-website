@@ -1,178 +1,113 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from "lucide-react";
+import { Send, CheckCircle } from "lucide-react";
+import PageTitle from "@/components/PageTitle"; // عدّل المسار حسب مشروعك
 
-export default function ContactClient({ lang, company }) {
+export default function ContactPage() {
+  const [lang, setLang] = useState("ar");
+
+  useEffect(() => {
+    const parts = window.location.pathname.split("/");
+    setLang(parts?.[1] === "en" ? "en" : "ar");
+  }, []);
+
+  const t = (ar, en) => (lang === "ar" ? ar : en);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
-  const t = (ar, en) => (lang === "ar" ? ar : en);
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
-    // Simulate sending delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const res = await fetch(`/${lang}/api/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    // Save message to localStorage
-    const messages = JSON.parse(localStorage.getItem("lal_messages") || "[]");
-    const newMessage = {
-      id: Date.now().toString(),
-      ...formData,
-      read: false,
-      createdAt: new Date().toISOString(),
-    };
-    messages.push(newMessage);
-    localStorage.setItem("lal_messages", JSON.stringify(messages));
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json?.error || "Failed");
 
-    setLoading(false);
-    setSuccess(true);
-
-    // Reset form after 3 seconds
-    setTimeout(() => {
+      setSuccess(true);
       setFormData({ name: "", email: "", phone: "", message: "" });
-      setSuccess(false);
-    }, 3000);
-  };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+      setTimeout(() => setSuccess(false), 3000);
+    } catch {
+      setError(
+        t(
+          "حصلت مشكلة أثناء الإرسال. جرّب تاني.",
+          "Something went wrong. Please try again."
+        )
+      );
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const contactInfo = [
-    {
-      icon: MapPin,
-      title: t("العنوان", "Address"),
-      value: company.address[lang],
-      link: company.mapLink,
-    },
-    {
-      icon: Phone,
-      title: t("الهاتف", "Phone"),
-      value: company.phone,
-      link: `tel:${company.phone}`,
-    },
-    {
-      icon: Mail,
-      title: t("البريد الإلكتروني", "Email"),
-      value: company.email,
-      link: `mailto:${company.email}`,
-    },
-    {
-      icon: Clock,
-      title: t("ساعات العمل", "Working Hours"),
-      value: company.workingHours[lang],
-    },
-  ];
 
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="space-y-6">
-              {contactInfo.map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  whileHover={{ x: 5 }}
-                  className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-navy to-navy-dark flex items-center justify-center flex-shrink-0">
-                      <item.icon size={24} className="text-gold" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-navy mb-2">
-                        {item.title}
-                      </h3>
-                      {item.link ? (
-                        <a
-                          href={item.link}
-                          target={item.icon === MapPin ? "_blank" : undefined}
-                          rel={item.icon === MapPin ? "noopener noreferrer" : undefined}
-                          className="text-gray-600 hover:text-navy transition"
-                        >
-                          {item.value}
-                        </a>
-                      ) : (
-                        <p className="text-gray-600">{item.value}</p>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+    <>
+      <PageTitle
+        title={t("تواصل معنا", "Contact Us")}
+        subtitle={t("يسعدنا استقبال رسالتك", "We'd love to hear from you")}
+      />
 
-            {/* Map */}
-            {company.mapLink && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4 }}
-                className="mt-8 rounded-2xl overflow-hidden shadow-lg border border-gray-200"
-              >
-                <iframe
-                  src={company.mapLink}
-                  width="100%"
-                  height="300"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title={t("موقعنا على الخريطة", "Our Location")}
-                />
-              </motion.div>
-            )}
-          </motion.div>
-
-          {/* Contact Form */}
+      <section className="py-14 bg-gray-50">
+        <div className="container mx-auto px-4">
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-2xl mx-auto"
           >
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
               <h2 className="text-2xl font-bold text-navy mb-6">
                 {t("أرسل لنا رسالة", "Send us a Message")}
               </h2>
 
+              {error && (
+                <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm text-center">
+                  {error}
+                </div>
+              )}
+
               {success ? (
                 <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
+                  initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="text-center py-12"
+                  className="text-center py-10"
                 >
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ delay: 0.2, type: "spring" }}
+                    transition={{ delay: 0.15, type: "spring" }}
                     className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center"
                   >
                     <CheckCircle size={48} className="text-green-600" />
                   </motion.div>
+
                   <h3 className="text-2xl font-bold text-navy mb-3">
-                    {t("تم إرسال رسالتك بنجاح!", "Message Sent Successfully!")}
+                    {t(
+                      "تم إرسال رسالتك بنجاح!",
+                      "Message Sent Successfully!"
+                    )}
                   </h3>
                   <p className="text-gray-600">
                     {t(
@@ -183,7 +118,6 @@ export default function ContactClient({ lang, company }) {
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
-                  {/* Name */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {t("الاسم", "Name")} *
@@ -199,7 +133,6 @@ export default function ContactClient({ lang, company }) {
                     />
                   </div>
 
-                  {/* Email */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {t("البريد الإلكتروني", "Email")} *
@@ -211,11 +144,13 @@ export default function ContactClient({ lang, company }) {
                       value={formData.email}
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition"
-                      placeholder={t("أدخل بريدك الإلكتروني", "Enter your email")}
+                      placeholder={t(
+                        "أدخل بريدك الإلكتروني",
+                        "Enter your email"
+                      )}
                     />
                   </div>
 
-                  {/* Phone */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {t("رقم الهاتف", "Phone")}
@@ -226,11 +161,13 @@ export default function ContactClient({ lang, company }) {
                       value={formData.phone}
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition"
-                      placeholder={t("أدخل رقم هاتفك", "Enter your phone number")}
+                      placeholder={t(
+                        "أدخل رقم هاتفك",
+                        "Enter your phone number"
+                      )}
                     />
                   </div>
 
-                  {/* Message */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {t("الرسالة", "Message")} *
@@ -242,11 +179,13 @@ export default function ContactClient({ lang, company }) {
                       value={formData.message}
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition resize-none"
-                      placeholder={t("اكتب رسالتك هنا", "Write your message here")}
+                      placeholder={t(
+                        "اكتب رسالتك هنا",
+                        "Write your message here"
+                      )}
                     />
                   </div>
 
-                  {/* Submit Button */}
                   <motion.button
                     type="submit"
                     disabled={loading}
@@ -257,7 +196,11 @@ export default function ContactClient({ lang, company }) {
                     {loading ? (
                       <motion.div
                         animate={{ rotate: 360 }}
-                        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1,
+                          ease: "linear",
+                        }}
                         className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
                       />
                     ) : (
@@ -272,7 +215,7 @@ export default function ContactClient({ lang, company }) {
             </div>
           </motion.div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

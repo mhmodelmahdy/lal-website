@@ -2,247 +2,218 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-    Phone, Mail, MapPin, Send, CheckCircle, Facebook, Linkedin, Youtube, Anchor
-} from "lucide-react";
-
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-};
-const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.45 } }
-};
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from "lucide-react";
 
 export default function ContactClient({ lang, company }) {
-    const t = (ar, en) => (lang === "ar" ? ar : en);
-    const [sent, setSent] = useState(false);
-    const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setSent(true);
-        setTimeout(() => setSent(false), 4000);
-        setForm({ name: "", email: "", phone: "", subject: "", message: "" });
-    };
+  const t = (ar, en) => (lang === "ar" ? ar : en);
 
-    const socials = company.socials || {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-    return (
-        <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="mx-auto max-w-6xl px-4 py-10"
-        >
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                {/* Contact Info — Left column */}
-                <motion.div variants={itemVariants} className="lg:col-span-2 space-y-5">
-                    {/* Phone numbers */}
-                    <motion.div
-                        whileHover={{ y: -3 }}
-                        className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all"
-                    >
-                        <h3 className="font-bold text-navy-dark text-lg mb-4 flex items-center gap-2">
-                            <Phone size={18} className="text-gold" />
-                            {t("أرقام الهاتف", "Phone Numbers")}
-                        </h3>
-                        <div className="space-y-2">
-                            {company.phones.map((ph) => (
-                                <motion.a
-                                    key={ph}
-                                    href={`tel:${ph}`}
-                                    whileHover={{ x: lang === "ar" ? -4 : 4 }}
-                                    className="flex items-center gap-2 px-4 py-3 rounded-xl bg-gray-50 hover:bg-navy/5 transition-colors text-sm font-medium"
-                                >
-                                    <Phone size={14} className="text-navy shrink-0" />
-                                    <span dir="ltr" style={{ unicodeBidi: "plaintext" }}>{ph}</span>
-                                </motion.a>
-                            ))}
-                        </div>
-                    </motion.div>
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-                    {/* Email */}
-                    <motion.div
-                        whileHover={{ y: -3 }}
-                        className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all"
-                    >
-                        <h3 className="font-bold text-navy-dark text-lg mb-4 flex items-center gap-2">
-                            <Mail size={18} className="text-gold" />
-                            {t("البريد الإلكتروني", "Email")}
-                        </h3>
-                        {company.email?.[lang] && (
-                            <a
-                                href={`mailto:${company.email[lang]}`}
-                                className="text-navy hover:text-gold transition-colors text-sm font-medium"
-                            >
-                                {company.email[lang]}
-                            </a>
-                        )}
-                    </motion.div>
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "Failed");
 
-                    {/* Address */}
-                    <motion.div
-                        whileHover={{ y: -3 }}
-                        className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all"
-                    >
-                        <h3 className="font-bold text-navy-dark text-lg mb-4 flex items-center gap-2">
-                            <MapPin size={18} className="text-gold" />
-                            {t("العنوان", "Address")}
-                        </h3>
-                        <p className="text-text-muted text-sm">{t("السودان - الخرطوم", "Sudan - Khartoum")}</p>
-                    </motion.div>
+      setSuccess(true);
+      setFormData({ name: "", email: "", phone: "", message: "" });
 
-                    {/* Social */}
-                    <motion.div
-                        whileHover={{ y: -3 }}
-                        className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all"
-                    >
-                        <h3 className="font-bold text-navy-dark text-lg mb-4">
-                            {t("تابعنا", "Follow Us")}
-                        </h3>
-                        <div className="flex gap-2">
-                            {[
-                                { href: socials.facebook || "#", Icon: Facebook },
-                                { href: socials.linkedin || "#", Icon: Linkedin },
-                                { href: socials.youtube || "#", Icon: Youtube },
-                            ].map(({ href, Icon }) => (
-                                <motion.a
-                                    key={Icon.name}
-                                    href={href}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    whileHover={{ scale: 1.15, y: -3 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    className="w-11 h-11 rounded-xl bg-navy/10 text-navy flex items-center justify-center hover:bg-gold hover:text-white transition-colors"
-                                >
-                                    <Icon size={18} />
-                                </motion.a>
-                            ))}
-                        </div>
-                    </motion.div>
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      setError(t("حصلت مشكلة أثناء الإرسال. جرّب تاني.", "Something went wrong. Please try again."));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                    {/* Ports */}
-                    <motion.div
-                        whileHover={{ y: -3 }}
-                        className="bg-gradient-to-br from-navy-dark to-navy rounded-2xl p-6 text-white shadow-sm hover:shadow-lg transition-all"
-                    >
-                        <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                            <Anchor size={18} className="text-gold" />
-                            {t("الموانئ الدولية", "International Ports")}
-                        </h3>
-                        <div className="flex flex-wrap gap-1.5">
-                            {company.ports.map((p) => (
-                                <span key={p.en} className="text-[11px] px-2.5 py-1 rounded-full bg-white/10 text-white/80">
-                                    {p[lang]}
-                                </span>
-                            ))}
-                        </div>
-                    </motion.div>
-                </motion.div>
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-                {/* Contact Form — Right column */}
-                <motion.div variants={itemVariants} className="lg:col-span-3">
-                    <div className="bg-white border border-gray-100 rounded-2xl p-6 md:p-8 shadow-sm">
-                        <h2 className="text-2xl font-bold text-navy-dark mb-6">
-                            {t("أرسل رسالة", "Send a Message")}
-                        </h2>
+  const contactInfo = [
+    { icon: MapPin, title: t("العنوان", "Address"), value: company.address[lang], link: company.mapLink },
+    { icon: Phone, title: t("الهاتف", "Phone"), value: company.phone, link: `tel:${company.phone}` },
+    { icon: Mail, title: t("البريد الإلكتروني", "Email"), value: company.email, link: `mailto:${company.email}` },
+    { icon: Clock, title: t("ساعات العمل", "Working Hours"), value: company.workingHours[lang] },
+  ];
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                        {t("الاسم", "Name")} *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={form.name}
-                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition text-sm"
-                                        placeholder={t("اسمك الكامل", "Your full name")}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                        {t("البريد", "Email")} *
-                                    </label>
-                                    <input
-                                        type="email"
-                                        required
-                                        value={form.email}
-                                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition text-sm"
-                                        placeholder={t("بريدك الإلكتروني", "Your email")}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                        {t("الهاتف", "Phone")}
-                                    </label>
-                                    <input
-                                        type="tel"
-                                        value={form.phone}
-                                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition text-sm"
-                                        placeholder={t("رقم الهاتف", "Phone number")}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                        {t("الموضوع", "Subject")} *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={form.subject}
-                                        onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition text-sm"
-                                        placeholder={t("موضوع الرسالة", "Message subject")}
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                    {t("الرسالة", "Message")} *
-                                </label>
-                                <textarea
-                                    required
-                                    rows={5}
-                                    value={form.message}
-                                    onChange={(e) => setForm({ ...form, message: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition text-sm resize-none"
-                                    placeholder={t("اكتب رسالتك هنا...", "Write your message here...")}
-                                />
-                            </div>
-
-                            <motion.button
-                                type="submit"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="w-full px-6 py-4 bg-gradient-to-r from-navy to-navy-dark text-white font-bold rounded-xl hover:shadow-lg transition-shadow flex items-center justify-center gap-2"
-                            >
-                                {sent ? (
-                                    <>
-                                        <CheckCircle size={18} />
-                                        {t("تم الإرسال بنجاح!", "Sent Successfully!")}
-                                    </>
-                                ) : (
-                                    <>
-                                        <Send size={18} />
-                                        {t("إرسال الرسالة", "Send Message")}
-                                    </>
-                                )}
-                            </motion.button>
-                        </form>
+  return (
+    <section className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <div className="grid lg:grid-cols-2 gap-12">
+          {/* Contact Info */}
+          <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+            <div className="space-y-6">
+              {contactInfo.map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  whileHover={{ x: 5 }}
+                  className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-navy to-navy-dark flex items-center justify-center flex-shrink-0">
+                      <item.icon size={24} className="text-gold" />
                     </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-navy mb-2">{item.title}</h3>
+                      {item.link ? (
+                        <a
+                          href={item.link}
+                          target={item.icon === MapPin ? "_blank" : undefined}
+                          rel={item.icon === MapPin ? "noopener noreferrer" : undefined}
+                          className="text-gray-600 hover:text-navy transition"
+                        >
+                          {item.value}
+                        </a>
+                      ) : (
+                        <p className="text-gray-600">{item.value}</p>
+                      )}
+                    </div>
+                  </div>
                 </motion.div>
+              ))}
             </div>
-        </motion.div>
-    );
+
+            {company.mapLink && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4 }}
+                className="mt-8 rounded-2xl overflow-hidden shadow-lg border border-gray-200"
+              >
+                <iframe
+                  src={company.mapLink}
+                  width="100%"
+                  height="300"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title={t("موقعنا على الخريطة", "Our Location")}
+                />
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Contact Form */}
+          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+              <h2 className="text-2xl font-bold text-navy mb-6">{t("أرسل لنا رسالة", "Send us a Message")}</h2>
+
+              {error && (
+                <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm text-center">
+                  {error}
+                </div>
+              )}
+
+              {success ? (
+                <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center py-12">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring" }}
+                    className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center"
+                  >
+                    <CheckCircle size={48} className="text-green-600" />
+                  </motion.div>
+                  <h3 className="text-2xl font-bold text-navy mb-3">{t("تم إرسال رسالتك بنجاح!", "Message Sent Successfully!")}</h3>
+                  <p className="text-gray-600">
+                    {t("شكراً لتواصلك معنا. سنرد عليك في أقرب وقت.", "Thank you for contacting us. We'll get back to you soon.")}
+                  </p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t("الاسم", "Name")} *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition"
+                      placeholder={t("أدخل اسمك", "Enter your name")}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t("البريد الإلكتروني", "Email")} *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition"
+                      placeholder={t("أدخل بريدك الإلكتروني", "Enter your email")}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t("رقم الهاتف", "Phone")}</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition"
+                      placeholder={t("أدخل رقم هاتفك", "Enter your phone number")}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t("الرسالة", "Message")} *</label>
+                    <textarea
+                      name="message"
+                      required
+                      rows={6}
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy focus:ring-2 focus:ring-navy/10 outline-none transition resize-none"
+                      placeholder={t("اكتب رسالتك هنا", "Write your message here")}
+                    />
+                  </div>
+
+                  <motion.button
+                    type="submit"
+                    disabled={loading}
+                    whileHover={{ scale: loading ? 1 : 1.02 }}
+                    whileTap={{ scale: loading ? 1 : 0.98 }}
+                    className="w-full px-8 py-4 bg-gradient-to-r from-navy to-navy-dark text-white font-bold rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                        className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                      />
+                    ) : (
+                      <>
+                        <Send size={20} />
+                        {t("إرسال الرسالة", "Send Message")}
+                      </>
+                    )}
+                  </motion.button>
+                </form>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
 }

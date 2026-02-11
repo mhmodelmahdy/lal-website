@@ -1,5 +1,4 @@
 import PageTitle from "../../../components/PageTitle";
-import { management } from "../../../data/management";
 import ManagementClient from "../../../components/pages/ManagementClient";
 
 export default async function ManagementPage({ params }) {
@@ -10,9 +9,13 @@ export default async function ManagementPage({ params }) {
     <>
       <PageTitle
         title={lang === "en" ? "Management Structure" : "الهيكل الإداري"}
-        subtitle={lang === "en" ? "Key leadership and department heads." : "الإدارة العليا ورؤساء الأقسام."}
+        subtitle={
+          lang === "en" 
+            ? "Meet our experienced leadership team driving excellence and innovation." 
+            : "تعرف على فريق القيادة المتميز الذي يقود التميز والابتكار."
+        }
       />
-      <ManagementClient lang={lang} management={management} />
+      <ManagementClient lang={lang} />
     </>
   );
 }
