@@ -1,88 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Clock, Mail, Phone, Facebook, Linkedin, Youtube } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Mail, Phone } from "lucide-react";
+import LanguageSwitch from "./LanguageSwitch";
 import { company } from "../data/company";
 
-export default function TopBar({ lang, reserveSide = "right" }) {
+export default function TopBar({ lang, pathname, containerClassName }) {
+  const currentPathname = usePathname();
+  const safePathname = pathname ?? currentPathname ?? `/${lang}`;
+  const containerPadding = containerClassName ?? "px-4";
   const isRTL = lang === "ar";
-  const [time, setTime] = useState("");
 
-  useEffect(() => {
-    const update = () => {
-      const now = new Date().toLocaleTimeString(isRTL ? "ar-EG" : "en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      setTime(now);
-    };
-    update();
-    const i = setInterval(update, 60000);
-    return () => clearInterval(i);
-  }, [isRTL]);
-
-  const email = company.email?.[lang] || "";
-  const phone = company.phones?.[0] || "";
-  const socials = company.socials || {};
-
-  // مساحة محجوزة عشان اللوجو ما يركبش على المحتوى
-  const sidePadding =
-    reserveSide === "right"
-      ? "pr-[220px] md:pr-[240px]"
-      : "pl-[220px] md:pl-[240px]";
-
-  // في العربي نخلي المحتوى يبدأ من اليمين (start) لكن مع مساحة اللوجو
-  // في الإنجليزي نخلي المحتوى يمين (end) برضه زي الصورة
-  const justify = "justify-start";
+  const phone = company.phones?.[0];
+  const email = company.email?.[lang] || company.email?.en || company.email;
 
   return (
-    <motion.div
-      initial={{ y: -10, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.28 }}
-      className="bg-white"
-    >
-      <div className={`mx-auto max-w-7xl px-4 h-10 flex items-center ${justify} ${sidePadding} gap-6 text-[13px] text-gray-700`}>
-        {/* Social */}
-        <div className="flex items-center gap-3">
-          <a href={socials.youtube || "#"} target="_blank" rel="noreferrer" aria-label="YouTube" className="p-1 hover:text-gray-900 transition">
-            <Youtube size={16} />
-          </a>
-          <a href={socials.linkedin || "#"} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="p-1 hover:text-gray-900 transition">
-            <Linkedin size={16} />
-          </a>
-          <a href={socials.facebook || "#"} target="_blank" rel="noreferrer" aria-label="Facebook" className="p-1 hover:text-gray-900 transition">
-            <Facebook size={16} />
-          </a>
+    <div className="bg-navy-dark text-white">
+      <div
+        className={[
+          `mx-auto max-w-7xl ${containerPadding} py-2 flex gap-2`,
+          "flex-col sm:flex-row sm:items-center sm:justify-between",
+          isRTL ? "sm:flex-row-reverse" : "",
+        ].join(" ")}
+      >
+        <div
+          className={[
+            "flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] sm:text-xs text-white/80",
+            isRTL ? "justify-end" : "",
+          ].join(" ")}
+        >
+          {phone && (
+            <a href={`tel:${phone}`} className="inline-flex items-center gap-2 hover:text-gold transition-colors">
+              <Phone size={14} className="text-gold" />
+              <span dir="ltr" style={{ unicodeBidi: "plaintext" }}>
+                {phone}
+              </span>
+            </a>
+          )}
+          {email && (
+            <a href={`mailto:${email}`} className="inline-flex items-center gap-2 hover:text-gold transition-colors">
+              <Mail size={14} className="text-gold" />
+              <span dir="ltr" style={{ unicodeBidi: "plaintext" }}>
+                {email}
+              </span>
+            </a>
+          )}
         </div>
 
-        {/* Phone */}
-        {phone ? (
-          <a href={`tel:${phone}`} className="hidden md:flex items-center gap-2 hover:text-gray-900 transition">
-            <Phone size={16} className="text-gray-500" />
-            <span dir="ltr" className="text-left" style={{ unicodeBidi: "plaintext" }}>
-              {phone}
-            </span>
-          </a>
-        ) : null}
-
-        {/* Email */}
-        {email ? (
-          <a href={`mailto:${email}`} className="hidden sm:flex items-center gap-2 hover:text-gray-900 transition">
-            <Mail size={16} className="text-gray-500" />
-            <span dir="ltr" style={{ unicodeBidi: "plaintext" }}>{email}</span>
-          </a>
-        ) : null}
-
-        {/* Time */}
-        <div className="flex items-center gap-2">
-          <Clock size={16} className="text-gray-500" />
-          <span>
-            {isRTL ? "توقيت السودان" : "Sudan Time"} : {time}
-          </span>
+        <div className={isRTL ? "self-start sm:self-auto" : "self-end sm:self-auto"}>
+          <LanguageSwitch lang={lang} pathname={safePathname} />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

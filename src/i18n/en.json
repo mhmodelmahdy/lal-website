@@ -8,7 +8,6 @@
     "contact": "Contact",
     "support": "Support"
   },
-  
   "Home": {
     "hero": {
       "title": "Your Trusted Partner Towards Leadership and Quality",
@@ -18,7 +17,9 @@
     },
     "about": {
       "title": "About the Company",
-      "description": "One of the leading national companies in export, import, and general trading. We operate according to the highest quality standards in both the Sudanese and global markets, leveraging our strong position in healthcare, agriculture, and logistics sectors."
+      "description": "One of the leading national companies in export, import, and general trading. We operate according to the highest quality standards in both the Sudanese and global markets, leveraging our strong position in healthcare, agriculture, and logistics sectors.",
+      "badge1": "Global Standards",
+      "badge2": "International Coverage"
     },
     "services": {
       "title": "Our Fields & Activities",
@@ -29,11 +30,14 @@
       "supplies_title": "General Supplies",
       "supplies_desc": "Providing agricultural machinery and heavy equipment to both government and private sectors.",
       "thirdparty_title": "Third-Party Import Services",
-      "thirdparty_desc": "Integrated solutions from supplier selection to customs clearance and transportation."
+      "thirdparty_desc": "Integrated solutions from supplier selection to customs clearance and transportation.",
+      "read_more": "Read More"
     },
     "vision": {
       "title": "Our Vision & Mission",
+      "vision_label": "Our Vision",
       "vision_text": "We aspire to become a globally leading company through strategic expansion and the establishment of international branches.",
+      "mission_label": "Our Mission",
       "mission_text": "Delivering essential services that enrich local and regional markets while achieving sustainable development."
     },
     "ports": {
@@ -44,8 +48,11 @@
       "clients": "Happy Clients",
       "projects": "Completed Projects",
       "years": "Years of Experience"
+    },
+    "cta": {
+      "title": "Ready to Partner With Us?",
+      "subtitle": "Contact us today and discover how we can support your business in export, import, and general supplies.",
+      "button": "Contact Us Now"
     }
   }
-
-
 }

@@ -1,31 +1,28 @@
 "use client";
 
-import Image from "next/image";
+import { useState, useEffect } from "react";
 import TopBar from "./TopBar";
 import Header from "./Header";
 
 export default function BrandHeader({ lang, dict, pathname }) {
-  const isRTL = lang === "ar";
-  const logoSide = isRTL ? "left" : "right";
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <div className="relative bg-white">
-      {/* TopBar: احجز مساحة ناحية اللوجو */}
-      <TopBar lang={lang} reserveSide={logoSide} />
-
-      {/* Header: المنيو في الناحية المقابلة للوجو */}
-      <Header lang={lang} dict={dict} pathname={pathname} logoSide={logoSide} />
-
-      {/* Logo Overlay: يمسك الاتنين */}
-      <div className={`absolute top-0 h-full flex items-center ${isRTL ? "left-4" : "right-4"}`}>
-        <Image
-          src="/logo-wide.png"
-          alt="Company Logo"
-          width={185}
-          height={90}
-          priority
-          className="object-contain"
-        />
+    <div
+      className={[
+        "sticky top-0 z-50 transition-shadow duration-300",
+        scrolled ? "shadow-lg shadow-navy/8" : ""
+      ].join(" ")}
+    >
+      <TopBar lang={lang} pathname={pathname} />
+      <div className="bg-white">
+        <Header key={pathname} lang={lang} dict={dict} pathname={pathname} />
       </div>
     </div>
   );

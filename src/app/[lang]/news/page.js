@@ -1,4 +1,5 @@
 import PageTitle from "../../../components/PageTitle";
+import NewsClient from "../../../components/pages/NewsClient";
 
 export default async function NewsPage({ params }) {
   const { lang: rawLang } = await params;
@@ -7,15 +8,10 @@ export default async function NewsPage({ params }) {
   return (
     <>
       <PageTitle
-        title={lang === "en" ? "News" : "الأخبار"}
-        subtitle={lang === "en" ? "Company updates and announcements." : "آخر تحديثات وإعلانات الشركة."}
+        title={lang === "en" ? "News & Updates" : "الأخبار والتحديثات"}
+        subtitle={lang === "en" ? "Latest company updates and announcements." : "آخر تحديثات وإعلانات الشركة."}
       />
-
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="bg-white border rounded-2xl p-6 text-gray-600 leading-8">
-          {lang === "en" ? "News section will be updated soon." : "سيتم تحديث قسم الأخبار قريبًا."}
-        </div>
-      </div>
+      <NewsClient lang={lang} />
     </>
   );
 }
