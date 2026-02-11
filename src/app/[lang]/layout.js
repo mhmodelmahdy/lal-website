@@ -1,9 +1,10 @@
 import "../globals.css";
 import Shell from "../../components/Shell";
 import { getDir } from "../../i18n/getDictionary";
+import { Analytics } from "@vercel/analytics/next";
 
 export async function generateMetadata({ params }) {
-  const { lang: rawLang } = params;
+  const { lang: rawLang } = await params;
   const lang = rawLang === "en" ? "en" : "ar";
 
   return {
@@ -26,14 +27,15 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function LangLayout({ children, params }) {
-  const { lang: rawLang } = params;
+  const { lang: rawLang } = await params;
   const lang = rawLang === "en" ? "en" : "ar";
   const dir = getDir(lang);
 
   return (
-    <html lang={lang} dir={dir}>
+    <html key={lang} lang={lang} dir={dir}>
       <body className="bg-gray-50 text-gray-900">
         <Shell lang={lang}>{children}</Shell>
+        <Analytics />
       </body>
     </html>
   );
