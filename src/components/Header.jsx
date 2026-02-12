@@ -20,6 +20,7 @@ export default function Header({ lang, dict, pathname, containerClassName }) {
     return [
       { href: `/${lang}`, label: t("home", lang === "ar" ? "الرئيسية" : "Home") },
       { href: `/${lang}/about`, label: t("about", lang === "ar" ? "عن الشركة" : "About") },
+      { href: `/${lang}/products`, label: t("Products", lang === "ar" ? "المنتجات" : "Products") },
       { href: `/${lang}/services`, label: t("services", lang === "ar" ? "الخدمات" : "Services") },
       { href: `/${lang}/management`, label: t("management", lang === "ar" ? "الإدارة" : "Management") },
       { href: `/${lang}/news`, label: t("news", lang === "ar" ? "الأخبار" : "News") },
