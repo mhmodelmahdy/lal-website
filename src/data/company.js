@@ -12,11 +12,6 @@ export const company = {
   ar: "info@lal-sd.com",
   en: "info@lal-sd.com"
   },
-  socials: {
-  facebook: "#",
-  linkedin: "#",
-  youtube: "#"
-  },
   aboutShort: {
     ar: "تُعد شركة لال للأنشطة المتعددة المحدودة واحدة من الشركات الوطنية الرائدة في مجالات التصدير والاستيراد والتجارة العامة والتوريدات العمومية، إلى جانب خدمات التشغيل الطبي وغير الطبي للقطاعين العام والخاص.",
     en: "Lal Multi Activities Co. Ltd is one of the leading national companies in export, import, general trading, and general supplies, in addition to medical and non-medical operation services."
