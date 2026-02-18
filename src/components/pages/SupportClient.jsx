@@ -157,6 +157,14 @@ export default function SupportClient({ lang }) {
                                 <Mail size={16} className="text-gold" />
                                 <span className="text-sm">info@lal-sd.com</span>
                             </motion.a>
+                            <motion.a
+                                whileHover={{ x: lang === "ar" ? -4 : 4 }}
+                                href="mailto:lalmultiactivitiesco@outlook.sa"
+                                className="flex items-center gap-3 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
+                            >
+                                <Mail size={16} className="text-gold" />
+                                <span className="text-sm">lalmultiactivitiesco@outlook.sa</span>
+                            </motion.a>
                         </div>
                     </motion.div>
 
