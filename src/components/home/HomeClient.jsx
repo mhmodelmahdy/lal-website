@@ -44,7 +44,7 @@ export default function HomeClient({ lang, messages }) {
   const stats = [
     { num: "2000+", label: t("stats.clients"), icon: Users },
     { num: "150+", label: t("stats.projects"), icon: Award },
-    { num: "10+", label: t("stats.years"), icon: TrendingUp },
+    { num: "100%", label: t("stats.years"), icon: TrendingUp },
   ];
 
   return (
