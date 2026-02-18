@@ -7,7 +7,7 @@ export const company = {
     ar: "شركة سودانية رائدة في مجالات التصدير والاستيراد والتجارة العامة والتوريدات العمومية.",
     en: "A leading Sudanese company in export, import, general trading, and general supplies."
   },
-  phones: ["00249123704221", "00971522212735"],
+  phones: ["00249123704221", "00249912688275"],
   email: {
   ar: "info@lalcompany.com",
   en: "info@lalcompany.com"

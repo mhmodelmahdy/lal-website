@@ -10,7 +10,7 @@ export default function PartnersPortalClient({ lang }) {
     const t = (ar, en) => (lang === "ar" ? ar : en);
 
     const benefits = [
-        t("الوصول إلى شبكة واسعة من الموردين والمستوردين", "Access to a wide network of suppliers and importers"),
+        t("الوصول إلي شبكة واسعة من المصدرين والمستوردين", "Access to a wide network of exporters and importers"),
         t("دعم لوجستي متكامل من الشحن وحتى التوصيل", "Comprehensive logistics support from shipping to delivery"),
         t("أسعار تنافسية وشروط تعاقد مرنة", "Competitive prices and flexible contract terms"),
         t("خبرة واسعة في الأسواق السودانية والعالمية", "Extensive experience in Sudanese and global markets"),

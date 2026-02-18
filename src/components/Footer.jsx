@@ -147,7 +147,16 @@ export default function Footer({ lang }) {
               )}
               <li className="flex items-start gap-2 text-white/70 text-sm">
                 <MapPin size={14} className="text-gold shrink-0 mt-0.5" />
-                <span>{t("السودان - الخرطوم", "Sudan - Khartoum")}</span>
+<span>
+  <div>{t("الفرع الرئيسي : بورتسودان", "Main Branch: Port Sudan")}</div>
+  <div>
+    {t(
+      "فروعنا : الخرطوم - مدني - عطبره - الابيض",
+      "Our branches: Khartoum - Madani - Atbara - El Obeid"
+    )}
+  </div>
+</span>
+
               </li>
             </ul>
           </div>

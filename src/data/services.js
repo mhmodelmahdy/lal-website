@@ -9,10 +9,11 @@ export const services = {
       { ar: "الصمغ العربي (صمغ طلح)", en: "Gum Arabic (Talha)" },
       { ar: "الصمغ العربي (صمغ هشاب)", en: "Gum Arabic (Hashab)" },
       { ar: "صمغ لبان (لبان طبيعي)", en: "Frankincense Gum (Natural Luban)" },
+      { ar: "السنمكة", en: "Senna" },
       { ar: "الكركدي", en: "Hibiscus (Karkade)" },
       { ar: "الفول السوداني (نقاوة)", en: "Peanuts (Premium Grade)" },
       { ar: "حب البطيخ", en: "Watermelon Seeds" },
-      { ar: "السمسم", en: "Sesame Seeds" },
+      { ar: "السمسم (أحمر / أبيض)", en: "Sesame Seeds (Red / White)" },
       { ar: "الأمباز", en: "Cottonseed Cake (Ambaz)" },
       { ar: "العدسية", en: "Lentils" }
     ]
@@ -28,6 +29,7 @@ export const services = {
       { ar: "الأدوية والمستحضرات الطبية والمستهلكات الطبية", en: "Pharmaceuticals and medical consumables" },
       { ar: "الأجهزة والمعدات الطبية والمخبرية", en: "Medical and laboratory equipment" },
       { ar: "منتجات الرعاية الصحية والمنتجات الاستهلاكية عالية الجودة", en: "Healthcare products and high-quality consumer goods" },
+      { ar: "تجهيز متكامل للمستشفيات والعيادات بأحدث المعدات الطبية", en: "Integrated equipping of hospitals and clinics with the latest medical equipment" },
       { ar: "المواد الغذائية والسلع الاستهلاكية الأساسية", en: "Food products and essential commodities" },
       { ar: "السيارات والشاحنات الثقيلة والمركبات التجارية", en: "Cars, heavy trucks, and commercial vehicles" },
       { ar: "معدات المصانع وخطوط الإنتاج الصناعية", en: "Industrial machinery and production lines" }

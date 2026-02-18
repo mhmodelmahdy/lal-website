@@ -67,6 +67,8 @@ export default function SuppliersPortalClient({ lang }) {
     ];
 
     const supplyAreas = [
+        t("الأدوية", "Pharmaceuticals"),
+        t("المستهلكات الطبية", "Medical Consumables"),
         t("الأجهزة الطبية", "Medical Equipment"),
         t("المعدات الصناعية", "Industrial Equipment"),
         t("المواد الزراعية", "Agricultural Materials"),

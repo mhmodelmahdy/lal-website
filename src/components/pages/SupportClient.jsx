@@ -18,16 +18,16 @@ const itemVariants = {
 const faqData = {
     ar: [
         { q: "ما هي مجالات عمل شركة لال؟", a: "تعمل شركة لال في مجالات التصدير والاستيراد والتجارة العامة والتوريدات العمومية، بالإضافة إلى خدمات التشغيل الطبي وغير الطبي للقطاعين العام والخاص." },
-        { q: "كيف يمكنني التواصل مع الشركة؟", a: "يمكنكم التواصل عبر الأرقام: 00249123704221 أو 00971522212735، أو عبر صفحة تواصل معنا على الموقع." },
-        { q: "ما هي المنتجات الزراعية التي تصدرها الشركة؟", a: "تصدر الشركة الصمغ العربي (طلح وهشاب ولبان)، الكركدي، الفول السوداني، حب البطيخ، السمسم، الأمباز، والعدسية." },
+        { q: "كيف يمكنني التواصل مع الشركة؟", a: "يمكنكم التواصل عبر الأرقام: 00249123704221 أو 00249912688275، أو عبر صفحة تواصل معنا على الموقع." },
+        { q: "ما هي المنتجات الزراعية التي تصدرها الشركة؟", a: "تصدر الشركة الصمغ العربي (طلح وهشاب ولبان)، الكركدي، الفول السوداني، حب البطيخ، السمسم (أحمر – أبيض)، السنمكة، الأمباز، والعدسية." },
         { q: "هل تقدم الشركة خدمات الاستيراد لحساب الغير؟", a: "نعم، تقدم الشركة خدمات متكاملة تشمل اختيار الموردين العالميين والتعاقد والشحن والتخليص الجمركي والنقل والتخزين والتوزيع." },
         { q: "ما هي الموانئ التي تتعامل معها الشركة؟", a: "تتعامل الشركة مع ميناء الدار البيضاء (المغرب)، جبل علي (الإمارات)، ميرسين (تركيا)، شنغهاي (الصين)، مومباي (الهند)، وجدة (السعودية)." },
         { q: "كيف أصبح شريكاً أو مورداً للشركة؟", a: "يمكنكم زيارة بوابة الشركاء أو بوابة الموردين على موقعنا وتعبئة نموذج الطلب، أو التواصل مع قسم تطوير الأعمال مباشرة." },
     ],
     en: [
         { q: "What are Lal's business areas?", a: "Lal operates in export, import, general trading, and general supplies, in addition to medical and non-medical operation services for public and private sectors." },
-        { q: "How can I contact the company?", a: "You can reach us at: 00249123704221 or 00971522212735, or through the Contact Us page on our website." },
-        { q: "What agricultural products does the company export?", a: "The company exports Gum Arabic (Talha, Hashab, and Luban), Hibiscus, Peanuts, Watermelon Seeds, Sesame Seeds, Cottonseed Cake (Ambaz), and Lentils." },
+        { q: "How can I contact the company?", a: "You can reach us at: 00249123704221 or 00249912688275, or through the Contact Us page on our website." },
+        { q: "What agricultural products does the company export?", a: "The company exports Gum Arabic (Talha, Hashab, and Luban), Hibiscus, Peanuts, Watermelon Seeds, Sesame Seeds (Red & White), Senna, Cottonseed Cake (Ambaz), and Lentils." },
         { q: "Does the company offer import services on behalf of third parties?", a: "Yes, we offer comprehensive services including supplier selection, contracting, shipping, customs clearance, transportation, storage, and distribution." },
         { q: "Which ports does the company deal with?", a: "We deal with Casablanca (Morocco), Jebel Ali (UAE), Mersin (Turkey), Shanghai (China), Mumbai (India), and Jeddah (Saudi Arabia)." },
         { q: "How can I become a partner or supplier?", a: "You can visit the Partners Portal or Suppliers Portal on our website and fill out the application form, or contact the Business Development department directly." },
@@ -143,11 +143,11 @@ export default function SupportClient({ lang }) {
                             </motion.a>
                             <motion.a
                                 whileHover={{ x: lang === "ar" ? -4 : 4 }}
-                                href="tel:00971522212735"
+                                href="tel:00249912688275"
                                 className="flex items-center gap-3 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
                             >
                                 <Phone size={16} className="text-gold" />
-                                <span dir="ltr" className="text-sm">00971522212735</span>
+                                <span dir="ltr" className="text-sm">00249912688275</span>
                             </motion.a>
                             <motion.a
                                 whileHover={{ x: lang === "ar" ? -4 : 4 }}

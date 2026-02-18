@@ -18,7 +18,7 @@ const cardVariants = {
     }
 };
 
-// البيانات الكاملة للإدارة - 8 أشخاص
+// البيانات الكاملة للإدارة
 const managementData = [
     {
         name: {
@@ -131,6 +131,22 @@ const managementData = [
         },
         image: "Matar Awad Mahl Saad.jpeg",
         icon: Users
+    },
+    {
+        name: {
+            ar: "رماز عبدالله آدم سراج",
+            en: "Ramaz Abdullah Adam Siraj"
+        },
+        role: {
+            ar: "مدير الشؤون التنظيمية والتراخيص الدوائية",
+            en: "Regulatory Affairs & Licensing Manager"
+        },
+        bio: {
+            ar: "تتولى مسؤولية الإشراف على جميع الأنشطة المتعلقة بتسجيل وترخيص المصانع والمنتجات الدوائية والطبية، وضمان التزامها باللوائح والقوانين التنظيمية المعتمدة. تعمل على إدارة ومتابعة عمليات التسجيل منذ إعداد الملفات وحتى الحصول على الموافقات النهائية، مع التنسيق المستمر مع الجهات الرقابية واللجان المختصة.",
+            en: "Oversees all activities related to the registration and licensing of pharmaceutical and medical factories and products, ensuring compliance with approved regulations. Manages and follows up on registration processes from file preparation to final approvals, coordinating continuously with regulatory bodies."
+        },
+        image: "Ramaz Abdullah Adam Siraj.jpeg",
+        icon: Briefcase
     }
 ];
 
@@ -143,9 +159,10 @@ export default function ManagementClient({ lang }) {
                 variants={containerVariants}
                 className="mx-auto max-w-6xl space-y-8"
             >
+                {/* تم تعديل المفتاح ليكون فريداً باستخدام index أيضاً لتجنب التكرار في حال تشابه الأسماء */}
                 {managementData.map((member, index) => (
                     <ManagementCard 
-                        key={member.name.en} 
+                        key={`${member.name.en}-${index}`} 
                         member={member} 
                         lang={lang}
                         index={index}
@@ -213,12 +230,18 @@ function ManagementCard({ member, lang, index }) {
                         </div>
                     </div>
 
-                    {/* النبذة */}
+                    {/* النبذة - تم التعديل لتقسيم النص بناءً على النقطة */}
                     <div className="relative">
                         <div className={`absolute top-0 ${isRTL ? 'right-0' : 'left-0'} w-1 h-full bg-navy rounded-full`} />
-                        <p className={`text-gray-700 leading-relaxed text-lg ${isRTL ? 'pr-5' : 'pl-5'}`}>
-                            {member.bio[lang]}
-                        </p>
+                        <div className={`text-gray-700 leading-relaxed text-lg ${isRTL ? 'pr-5' : 'pl-5'}`}>
+                            {member.bio[lang].split('.').map((sentence, i) => (
+                                sentence.trim() && (
+                                    <p key={i} className="mb-2 last:mb-0">
+                                        {sentence.trim()}.
+                                    </p>
+                                )
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
