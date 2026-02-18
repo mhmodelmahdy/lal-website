@@ -164,8 +164,11 @@ export default function Footer({ lang }) {
 
         {/* Divider */}
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/50 text-sm">
-            © {new Date().getFullYear()} {company.name[lang]}. {t("جميع الحقوق محفوظة", "All rights reserved")}.
+          <p className="text-white/50 text-sm text-center">
+            © {new Date().getFullYear()} {company.name[lang]}.
+            <span className="block">
+              {t("جميع الحقوق محفوظة", "All rights reserved")}
+            </span>
           </p>
 
           {/* Back to top */}
