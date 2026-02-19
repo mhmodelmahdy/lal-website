@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/db";
 import { getAdminOrNull } from "@/lib/adminGuard";
+import { isAllowedNewsImageUrl } from "@/lib/r2";
+
+function parseDateOrNull(value) {
+  if (value == null || value === "") return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toISOString();
+}
 
 export async function GET(req) {
   const admin = await getAdminOrNull();
@@ -57,11 +65,14 @@ export async function POST(req) {
   const content_ar = String(body?.content_ar || "").trim();
   const content_en = String(body?.content_en || "").trim();
   const image = String(body?.image || "").trim() || null;
-  const date = body?.date ? new Date(body.date).toISOString() : new Date().toISOString();
+  const date = parseDateOrNull(body?.date) || new Date().toISOString();
   const is_published = Boolean(body?.is_published);
 
   if (!title_ar || !title_en || !content_ar || !content_en) {
     return NextResponse.json({ success: false, error: "Missing fields" }, { status: 400 });
+  }
+  if (image && !isAllowedNewsImageUrl(image)) {
+    return NextResponse.json({ success: false, error: "Invalid image host" }, { status: 400 });
   }
 
   const res = await pool.query(
@@ -86,9 +97,18 @@ export async function PATCH(req) {
   const title_en = body?.title_en != null ? String(body.title_en).trim() : null;
   const content_ar = body?.content_ar != null ? String(body.content_ar).trim() : null;
   const content_en = body?.content_en != null ? String(body.content_en).trim() : null;
-  const image = body?.image != null ? (String(body.image).trim() || null) : null;
-  const date = body?.date != null ? new Date(body.date).toISOString() : null;
+  const hasImage = Object.prototype.hasOwnProperty.call(body || {}, "image");
+  const image = hasImage ? String(body?.image || "").trim() || null : null;
+  const hasDate = Object.prototype.hasOwnProperty.call(body || {}, "date");
+  const date = hasDate ? parseDateOrNull(body?.date) : null;
   const is_published = typeof body?.is_published === "boolean" ? body.is_published : null;
+
+  if (hasDate && !date) {
+    return NextResponse.json({ success: false, error: "Invalid date" }, { status: 400 });
+  }
+  if (hasImage && image && !isAllowedNewsImageUrl(image)) {
+    return NextResponse.json({ success: false, error: "Invalid image host" }, { status: 400 });
+  }
 
   const res = await pool.query(
     `update public.news
@@ -97,13 +117,13 @@ export async function PATCH(req) {
        title_en = coalesce($2, title_en),
        content_ar = coalesce($3, content_ar),
        content_en = coalesce($4, content_en),
-       image = coalesce($5, image),
-       date = coalesce($6, date),
-       is_published = coalesce($7, is_published),
+       image = case when $5::boolean then $6 else image end,
+       date = case when $7::boolean then $8 else date end,
+       is_published = coalesce($9, is_published),
        updated_at = now()
-     where id = $8
+     where id = $10
      returning id`,
-    [title_ar, title_en, content_ar, content_en, image, date, is_published, id]
+    [title_ar, title_en, content_ar, content_en, hasImage, image, hasDate, date, is_published, id]
   );
 
   if (res.rowCount === 0) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });

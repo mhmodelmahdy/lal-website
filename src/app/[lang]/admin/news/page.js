@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Pencil, Trash2, Eye, EyeOff, X, Save, Search, RefreshCw } from "lucide-react";
 
+const MAX_IMAGE_SIZE_MB = 5;
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
+
 export default function AdminNewsPage() {
   const router = useRouter();
   const [lang, setLang] = useState("ar");
@@ -23,6 +27,8 @@ export default function AdminNewsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [mode, setMode] = useState("create"); // create | edit
   const [busy, setBusy] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
 
   const emptyForm = {
     id: null,
@@ -94,6 +100,7 @@ export default function AdminNewsPage() {
   function openCreate() {
     setMode("create");
     setForm({ ...emptyForm, date: new Date().toISOString().slice(0, 10), is_published: true });
+    setSelectedImageFile(null);
     setModalOpen(true);
   }
 
@@ -109,14 +116,46 @@ export default function AdminNewsPage() {
       date: item.date ? String(item.date).slice(0, 10) : new Date().toISOString().slice(0, 10),
       is_published: !!item.is_published,
     });
+    setSelectedImageFile(null);
     setModalOpen(true);
+  }
+
+  async function uploadImage(file) {
+    if (!file) return form.image || "";
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      throw new Error(t("نوع الصورة غير مدعوم.", "Unsupported image type."));
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      throw new Error(
+        t(`حجم الصورة يجب ألا يزيد عن ${MAX_IMAGE_SIZE_MB}MB.`, `Image size must be <= ${MAX_IMAGE_SIZE_MB}MB.`)
+      );
+    }
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.set("file", file);
+
+      const res = await fetch("/api/admin/news/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "Upload failed");
+      return String(json?.data?.url || "").trim();
+    } finally {
+      setUploadingImage(false);
+    }
   }
 
   async function save() {
     setBusy(true);
     try {
+      const uploadedImageUrl = selectedImageFile ? await uploadImage(selectedImageFile) : form.image;
       const payload = {
         ...form,
+        image: uploadedImageUrl || "",
         date: form.date ? new Date(form.date).toISOString() : new Date().toISOString(),
       };
 
@@ -130,9 +169,11 @@ export default function AdminNewsPage() {
       if (!res.ok) throw new Error(json?.error || "Failed");
 
       setModalOpen(false);
+      setSelectedImageFile(null);
       await load();
     } catch (e) {
-      alert(t("فشل حفظ الخبر. تأكد من إدخال كل الحقول.", "Failed to save. Please fill all fields."));
+      const fallbackMessage = t("فشل حفظ الخبر. تأكد من إدخال كل الحقول.", "Failed to save. Please fill all fields.");
+      alert(String(e?.message || fallbackMessage));
     } finally {
       setBusy(false);
     }
@@ -366,12 +407,50 @@ export default function AdminNewsPage() {
                   placeholder="Content (EN)"
                 />
 
-                <input
-                  value={form.image}
-                  onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
-                  className="px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-navy focus:ring-2 focus:ring-navy/10"
-                  placeholder={t("رابط الصورة (اختياري)", "Image URL (optional)")}
-                />
+                <div className="md:col-span-2 rounded-xl border border-gray-200 p-4">
+                  <div className="text-sm font-medium text-gray-700 mb-2">{t("الصورة", "Image")}</div>
+                  <input
+                    type="file"
+                    accept={ALLOWED_IMAGE_TYPES.join(",")}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      setSelectedImageFile(file);
+                    }}
+                    className="block w-full text-sm text-gray-700 file:mr-3 file:rounded-lg file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    {t(`الأنواع المسموحة: JPG, PNG, WEBP, GIF, AVIF - أقصى حجم ${MAX_IMAGE_SIZE_MB}MB`, `Allowed: JPG, PNG, WEBP, GIF, AVIF - Max ${MAX_IMAGE_SIZE_MB}MB`)}
+                  </p>
+
+                  {selectedImageFile && (
+                    <div className="text-xs text-blue-700 mt-2">
+                      {t("ملف جديد:", "New file:")} {selectedImageFile.name}
+                    </div>
+                  )}
+
+                  {form.image && (
+                    <div className="mt-2 flex items-center gap-3 flex-wrap">
+                      <a
+                        href={form.image}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-gray-600 underline break-all"
+                      >
+                        {t("الصورة الحالية", "Current image")}
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm((f) => ({ ...f, image: "" }));
+                          setSelectedImageFile(null);
+                        }}
+                        className="text-xs px-2 py-1 rounded-md bg-red-50 text-red-700 hover:bg-red-100"
+                      >
+                        {t("إزالة الصورة", "Remove image")}
+                      </button>
+                    </div>
+                  )}
+                </div>
 
                 <div className="flex items-center gap-3">
                   <input
@@ -401,11 +480,11 @@ export default function AdminNewsPage() {
 
                 <button
                   onClick={save}
-                  disabled={busy}
+                  disabled={busy || uploadingImage}
                   className="px-5 py-3 rounded-xl bg-gradient-to-r from-navy to-navy-dark text-white font-bold inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   <Save size={16} />
-                  {t("حفظ", "Save")}
+                  {uploadingImage ? t("جارٍ رفع الصورة...", "Uploading image...") : t("حفظ", "Save")}
                 </button>
               </div>
             </motion.div>
