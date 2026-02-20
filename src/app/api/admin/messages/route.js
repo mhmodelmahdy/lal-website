@@ -3,44 +3,84 @@ import { pool } from "@/lib/db";
 import { getAdminOrNull } from "@/lib/adminGuard";
 
 export async function GET(req) {
-  const admin = await getAdminOrNull();
-  if (!admin) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+  try {
+    const admin = await getAdminOrNull();
+    if (!admin) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
 
-  const { searchParams } = new URL(req.url);
-  const page = Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
-  const size = Math.min(Math.max(parseInt(searchParams.get("size") || "20", 10), 1), 100);
-  const filter = (searchParams.get("filter") || "all").toLowerCase(); // all | unread | read
+    const { searchParams } = new URL(req.url);
+    const page = Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
+    const size = Math.min(Math.max(parseInt(searchParams.get("size") || "10", 10), 1), 50);
+    const rawFilter = (searchParams.get("filter") || "all").toLowerCase(); // all | unread | read
+    const filter = ["all", "unread", "read"].includes(rawFilter) ? rawFilter : "all";
 
-  const offset = (page - 1) * size;
+    const offset = (page - 1) * size;
+    const params = [];
+    const whereParts = [];
 
-  let where = "";
-  if (filter === "unread") where = "where is_read = false";
-  if (filter === "read") where = "where is_read = true";
+    if (filter === "unread") {
+      params.push(false);
+      whereParts.push(`is_read = $${params.length}`);
+    }
+    if (filter === "read") {
+      params.push(true);
+      whereParts.push(`is_read = $${params.length}`);
+    }
 
-  const [listRes, countRes] = await Promise.all([
-    pool.query(
-      `select id, name, email, phone, message, is_read, created_at
-       from public.contact_messages
-       ${where}
-       order by created_at desc
-       limit $1 offset $2`,
-      [size, offset]
-    ),
-    pool.query(`select count(*)::int as total from public.contact_messages ${where}`),
-  ]);
+    const where = whereParts.length ? `where ${whereParts.join(" and ")}` : "";
+    const limitPlaceholder = `$${params.length + 1}`;
+    const offsetPlaceholder = `$${params.length + 2}`;
+    params.push(size, offset);
 
-  const total = countRes.rows[0]?.total || 0;
+    const res = await pool.query(
+      `with filtered as (
+         select id, name, email, phone, message, is_read, created_at
+         from public.contact_messages
+         ${where}
+       ),
+       total as (
+         select count(*)::int as total from filtered
+       ),
+       paged as (
+         select id, name, email, phone, message, is_read, created_at
+         from filtered
+         order by created_at desc
+         limit ${limitPlaceholder} offset ${offsetPlaceholder}
+       )
+       select
+         paged.id,
+         paged.name,
+         paged.email,
+         paged.phone,
+         paged.message,
+         paged.is_read,
+         paged.created_at,
+         total.total
+       from total
+       left join paged on true`,
+      params
+    );
 
-  return NextResponse.json({
-    success: true,
-    data: {
-      items: listRes.rows,
-      page,
-      size,
-      total,
-      totalPages: Math.ceil(total / size),
-    },
-  });
+    const total = res.rows[0]?.total || 0;
+    const items = res.rows
+      .filter((row) => row.id != null)
+      .map(({ total: _total, ...item }) => item);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        items,
+        page,
+        size,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / size)),
+      },
+    });
+  } catch (e) {
+    return NextResponse.json(
+      { success: false, error: "Failed to load messages", details: String(e?.message || e) },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PATCH(req) {

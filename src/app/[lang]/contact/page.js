@@ -30,31 +30,69 @@ export default function ContactPage() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const getFriendlyErrorMessage = (json, status) => {
+    if (status === 429 || json?.errorCode === "RATE_LIMITED") {
+      return t(
+        "تم إرسال رسائل كثيرة خلال وقت قصير. حاول مرة تانية بعد دقيقة.",
+        "Too many messages in a short time. Please try again in about a minute."
+      );
+    }
+
+    const firstProblem = Array.isArray(json?.problems) ? json.problems[0] : null;
+    if (firstProblem?.code === "MESSAGE_TOO_SHORT") {
+      return t(
+        "الرسالة لازم تكون 5 حروف على الأقل.",
+        "Message must be at least 5 characters."
+      );
+    }
+
+    if (typeof json?.error === "string" && json.error.trim()) return json.error;
+    return t(
+      "حصلت مشكلة أثناء الإرسال. جرّب تاني.",
+      "Something went wrong. Please try again."
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
+    if (formData.message.trim().length < 5) {
+      setError(
+        t(
+          "الرسالة لازم تكون 5 حروف على الأقل.",
+          "Message must be at least 5 characters."
+        )
+      );
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch(`/${lang}/api/messages`, {
+      const res = await fetch(`/api/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json?.error || "Failed");
+      if (!res.ok) {
+        throw new Error(getFriendlyErrorMessage(json, res.status));
+      }
 
       setSuccess(true);
       setFormData({ name: "", email: "", phone: "", message: "" });
 
       setTimeout(() => setSuccess(false), 3000);
-    } catch {
+    } catch (err) {
       setError(
-        t(
-          "حصلت مشكلة أثناء الإرسال. جرّب تاني.",
-          "Something went wrong. Please try again."
-        )
+        err instanceof Error && err.message
+          ? err.message
+          : t(
+              "حصلت مشكلة أثناء الإرسال. جرّب تاني.",
+              "Something went wrong. Please try again."
+            )
       );
     } finally {
       setLoading(false);
@@ -175,6 +213,7 @@ export default function ContactPage() {
                     <textarea
                       name="message"
                       required
+                      minLength={5}
                       rows={6}
                       value={formData.message}
                       onChange={handleChange}
